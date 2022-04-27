@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using UpgradeProjectSample.Books;
 using UpgradeProjectSample.Models;
 using UpgradeProjectSample.Users;
@@ -52,7 +53,11 @@ namespace UpgradeProjectSample
                 options.Cookie.IsEssential = true;
                 options.Cookie.SameSite = SameSiteMode.Strict;
             });
-            services.AddMvc();
+            services.AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                });
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddUserStore<ApplicationUserStore>()
                 .AddEntityFrameworkStores<SampleContext>()
