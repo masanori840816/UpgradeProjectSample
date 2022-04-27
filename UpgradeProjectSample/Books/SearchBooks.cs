@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UpgradeProjectSample.Books
 {
@@ -32,6 +33,27 @@ namespace UpgradeProjectSample.Books
             {
                 whereClause = " WHERE b.name LIKE '%" + criteria.Name + "%'";
             }
+            if(criteria.LanguageIds.Length > 0)
+            {
+                var ids = "";
+                foreach(var id in criteria.LanguageIds)
+                {
+                    if(string.IsNullOrEmpty(ids) == false)
+                    {
+                        ids += ", ";
+                    }
+                    ids += id;
+                }
+                if(string.IsNullOrEmpty(whereClause))
+                {
+                    whereClause = " WHERE ";
+                }
+                else
+                {
+                    whereClause += " AND ";
+                }
+                whereClause += "language_id IN (" + ids + ")";
+            }
             if(string.IsNullOrEmpty(criteria.AuthorName) == false)
             {
                 if(string.IsNullOrEmpty(whereClause))
@@ -49,6 +71,19 @@ namespace UpgradeProjectSample.Books
                 whereClause +
                 " ORDER BY b.id");
             return await query.ToListAsync<SearchedBook>();
+        }
+        public async Task<List<Book>> GetByLanguageIdsAsync(int[] languageIds)
+        {
+            var languages = await this.context.Languages
+                .Where(L => languageIds.Contains(L.Id))
+                .ToListAsync();
+            if(languages.Count <= 0)
+            {
+                return new List<Book>();
+            }
+            return await this.context.Books
+                .Where(b => languages.Any(L => L.Id == b.LanguageId))
+                .ToListAsync();
         }
     }
 }

@@ -47,15 +47,14 @@ namespace UpgradeProjectSample.Controllers
         {
             return await this.bookService.GetAsync(new SearchBookCriteria(bookName, languageIds ?? new int[0], authorName));
         }
+        [Route("books2")]
+        public async Task<List<Book>> GetByLanguageIds(int[] languageIds)
+        {
+            return await this.bookService.GetByLanguageIdsAsync(languageIds);
+        }
         [HttpGet]
         [Route("books/messages")]
         public async Task<IActionResult> GetMessage()
-        {
-            return Json(await this.books.GetAllAsync());
-        }
-        [HttpPost]
-        [Route("books/messages")]
-        public async Task<IActionResult> GenerateMessage([FromBody] Book book)
         {
             return Json(await this.books.GetAllAsync());
         }

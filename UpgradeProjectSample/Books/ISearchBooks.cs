@@ -9,5 +9,6 @@ namespace UpgradeProjectSample.Books
     {
         Task<List<Book>> GetAllAsync();
         Task<List<SearchedBook>> GetAsync(SearchBookCriteria criteria);
+        Task<List<Book>> GetByLanguageIdsAsync(int[] languageIds);
     }
 }

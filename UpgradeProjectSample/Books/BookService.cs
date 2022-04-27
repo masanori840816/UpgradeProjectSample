@@ -103,5 +103,9 @@ namespace UpgradeProjectSample.Books
         {
             return await this.searchBooks.GetAsync(criteria);
         }
+        public async Task<List<Book>> GetByLanguageIdsAsync(int[] languageIds)
+        {
+            return await this.searchBooks.GetByLanguageIdsAsync(languageIds);
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace UpgradeProjectSample.Books
         Task CreateSampleAsync(string name);
         Task<List<Book>> GetAllAsync();
         Task<List<SearchedBook>> GetAsync(SearchBookCriteria criteria);
-
+        Task<List<Book>> GetByLanguageIdsAsync(int[] languageIds);
         Task UpdateBookAsync(int id);
         Task UpdateAuthorAsync(int id);
     }
