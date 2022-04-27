@@ -1,18 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using UpgradeProjectSample.Books;
 using UpgradeProjectSample.Models;
 using UpgradeProjectSample.Users;
+using UpgradeProjectSample.Users.Models;
 using UpgradeProjectSample.Users.Repositories;
 
 namespace UpgradeProjectSample
@@ -28,9 +29,8 @@ namespace UpgradeProjectSample
         {
             services.AddDbContext<SampleContext>(options =>
                 options.UseNpgsql(this.config["DbConnection"]));
-            services.AddScoped<IUserTokens, UserTokens>();
-            services.AddScoped<IApplicationUserService, ApplicationUserService>();
-            services.AddScoped<IApplicationUsers, ApplicationUsers>();
+            
+            // JWTを使った認証.
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -46,8 +46,25 @@ namespace UpgradeProjectSample
                             Encoding.UTF8.GetBytes(this.config["Jwt:Key"])),
                     };
                 });
-
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromSeconds(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.Cookie.SameSite = SameSiteMode.Strict;
+            });
             services.AddMvc();
+            services.AddIdentity<ApplicationUser, IdentityRole<int>>()
+                .AddUserStore<ApplicationUserStore>()
+                .AddEntityFrameworkStores<SampleContext>()
+                .AddDefaultTokenProviders();
+            services.AddScoped<IUserTokens, UserTokens>();
+            services.AddScoped<IApplicationUserService, ApplicationUserService>();
+            services.AddScoped<IApplicationUsers, ApplicationUsers>();
+            services.AddScoped<ILanguages, Languages>();
+            services.AddScoped<IAuthors, Authors>();
+            services.AddScoped<IBooks, UpgradeProjectSample.Books.Books>();
+            services.AddScoped<ISearchBooks, SearchBooks>();
+            services.AddScoped<IBookService, BookService>();
         }
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
@@ -56,6 +73,33 @@ namespace UpgradeProjectSample
                 app.UseDeveloperExceptionPage();
             }
             app.UseStaticFiles();
+            app.UseSession();
+            app.Use(async (context, next) =>
+            {
+                var token = context.Session.GetString("user-token");
+                if(string.IsNullOrEmpty(token) == false)
+                {            
+                    context.Request.Headers.Add("Authorization", $"Bearer {token}");
+                }
+                await next();
+            });
+            app.UseStatusCodePages(async context =>
+            {
+                if (context.HttpContext.Response.StatusCode == (int)HttpStatusCode.Unauthorized)
+                {
+                    if(context.HttpContext.Request.Path.StartsWithSegments("/") ||
+                        context.HttpContext.Request.Path.StartsWithSegments("/pages"))
+                    {
+                        context.HttpContext.Response.Redirect("/pages/signin");
+                    }
+                    else
+                    {
+                        context.HttpContext.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    }            
+                    return;
+                }
+                await context.Next(context.HttpContext);
+            });
             app.UseAuthentication();
             app.UseMvc();
         }

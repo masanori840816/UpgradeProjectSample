@@ -1,5 +1,5 @@
 export async function getMessage(): Promise<void> {
-    const response = await fetch("books/messages",
+    const response = await fetch("/books/messages",
     {
         mode: "cors",
         method: "GET"
@@ -7,7 +7,7 @@ export async function getMessage(): Promise<void> {
     console.log(await response.json());    
 }
 export async function postMessage(): Promise<void> {
-    const response = await fetch("books/messages",
+    const response = await fetch("/books/messages",
     {
         mode: "cors",
         method: "POST",
