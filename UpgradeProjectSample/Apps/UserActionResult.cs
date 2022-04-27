@@ -3,13 +3,12 @@ namespace UpgradeProjectSample.Apps
     public class UserActionResult
     {
         public bool Succeeded { get; set; }
-        public string ErrorMessage { get; set; }
-
+        public string? ErrorMessage { get; set; }
         public UserActionResult()
         {
-
+            
         }
-        public UserActionResult(bool succeeded, string errorMessage)
+        public UserActionResult(bool succeeded, string? errorMessage)
         {
             this.Succeeded = succeeded;
             this.ErrorMessage = errorMessage;

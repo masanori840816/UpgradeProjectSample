@@ -14,15 +14,15 @@ namespace UpgradeProjectSample.Users.Models
         public override int Id { get; set; }
         [Required]
         [Column("user_name")]
-        public override string UserName { get; set; } = null;
+        public override string UserName { get; set; } = null!;
         [Column("organization")]
-        public string Organization { get; set; }
+        public string? Organization { get; set; }
         [Required]
         [Column("mail")]
-        public override string Email { get; set; } = null;
+        public override string Email { get; set; } = null!;
         [Required]
         [Column("password")]
-        public override string PasswordHash { get; set; } = null;
+        public override string PasswordHash { get; set; } = null!;
         [Required]
         [Column("last_update_date", TypeName = "timestamp with time zone")]
         public DateTime LastUpdateDate { get; set; }
@@ -49,11 +49,11 @@ namespace UpgradeProjectSample.Users.Models
         [NotMapped]
         public override int AccessFailedCount { get; set; }
         [NotMapped]
-        public override string PhoneNumber { get; set; }
+        public override string? PhoneNumber { get; set; }
         [NotMapped]
-        public override string ConcurrencyStamp { get; set; }
+        public override string? ConcurrencyStamp { get; set; }
         [NotMapped]
-        public override string SecurityStamp { get; set; }
+        public override string? SecurityStamp { get; set; }
         [NotMapped]
         public override DateTimeOffset? LockoutEnd { get; set; }
         [NotMapped]
@@ -99,7 +99,7 @@ namespace UpgradeProjectSample.Users.Models
             PasswordHash = new PasswordHasher<ApplicationUser>()
                 .HashPassword(this, password);
         }
-        public string Validate()
+        public string? Validate()
         {
             if(string.IsNullOrEmpty(UserName))
             {

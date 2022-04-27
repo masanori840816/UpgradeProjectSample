@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using UpgradeProjectSample.Books;
 using UpgradeProjectSample.Models;
 using UpgradeProjectSample.Users;
@@ -28,6 +28,7 @@ namespace UpgradeProjectSample
         }
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRazorPages();
             services.AddDbContext<SampleContext>(options =>
                 options.UseNpgsql(this.config["DbConnection"]));
             
@@ -53,10 +54,11 @@ namespace UpgradeProjectSample
                 options.Cookie.IsEssential = true;
                 options.Cookie.SameSite = SameSiteMode.Strict;
             });
-            services.AddMvc()
+            services.AddControllers()
                 .AddJsonOptions(options =>
                 {
-                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    // System.Text.Jsonだとver.3.XでReferenceLoopを切る方法がない？ためスキップ.
+                    //options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 });
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddUserStore<ApplicationUserStore>()
@@ -71,13 +73,14 @@ namespace UpgradeProjectSample
             services.AddScoped<ISearchBooks, SearchBooks>();
             services.AddScoped<IBookService, BookService>();
         }
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.EnvironmentName == "Development")
             {
                 app.UseDeveloperExceptionPage();
             }
             app.UseStaticFiles();
+            app.UseRouting();
             app.UseSession();
             app.Use(async (context, next) =>
             {
@@ -106,7 +109,12 @@ namespace UpgradeProjectSample
                 await context.Next(context.HttpContext);
             });
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

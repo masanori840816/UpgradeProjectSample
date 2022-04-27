@@ -6,6 +6,7 @@ namespace UpgradeProjectSample.Books.Dto
     {
         [Key]
         public int BookId { get; set; }
+        public int LanguageId { get; set; }
         public string BookName { get; set; } = "";
         public string AuthorName { get; set; } = "";
     }

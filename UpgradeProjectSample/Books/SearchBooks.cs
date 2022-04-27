@@ -28,49 +28,25 @@ namespace UpgradeProjectSample.Books
         }
         public async Task<List<SearchedBook>> GetAsync(SearchBookCriteria criteria)
         {
-            var whereClause = "";
+            // this.context.SearchedBooks.FromSql から変更.
+            var query = this.context.SearchedBooks
+                .FromSqlRaw("SELECT b.id AS \"BookId\", b.language_id AS \"LanguageId\", b.name AS \"BookName\", a.name AS \"AuthorName\" FROM book b INNER JOIN author AS a ON b.author_id = a.id");
+
             if(string.IsNullOrEmpty(criteria.Name) == false)
             {
-                whereClause = " WHERE b.name LIKE '%" + criteria.Name + "%'";
+                query = query.Where(b => b.BookName.Contains(criteria.Name));
             }
             if(criteria.LanguageIds.Length > 0)
             {
-                var ids = "";
-                foreach(var id in criteria.LanguageIds)
-                {
-                    if(string.IsNullOrEmpty(ids) == false)
-                    {
-                        ids += ", ";
-                    }
-                    ids += id;
-                }
-                if(string.IsNullOrEmpty(whereClause))
-                {
-                    whereClause = " WHERE ";
-                }
-                else
-                {
-                    whereClause += " AND ";
-                }
-                whereClause += "language_id IN (" + ids + ")";
+                query = query.Where(b => criteria.LanguageIds.Contains(b.LanguageId));
             }
             if(string.IsNullOrEmpty(criteria.AuthorName) == false)
             {
-                if(string.IsNullOrEmpty(whereClause))
-                {
-                    whereClause = " WHERE ";
-                }
-                else
-                {
-                    whereClause += " AND ";
-                }
-                whereClause += "a.name LIKE '%" + criteria.AuthorName + "%'";
+                query = query.Where(b => b.AuthorName.Contains(criteria.AuthorName));
             }
-            var query = this.context.SearchedBooks.FromSql(
-                "SELECT b.id AS \"BookId\", b.name AS \"BookName\", a.name AS \"AuthorName\" FROM book b INNER JOIN author AS a ON b.author_id = a.id" +
-                whereClause +
-                " ORDER BY b.id");
-            return await query.ToListAsync<SearchedBook>();
+            return await query
+                .OrderBy(b => b.BookId)
+                .ToListAsync();
         }
         public async Task<List<Book>> GetByLanguageIdsAsync(int[] languageIds)
         {

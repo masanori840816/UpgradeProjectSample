@@ -32,6 +32,8 @@ namespace UpgradeProjectSample.Models
 
             modelBuilder.Entity<Language>()
                 .HasData(LanguageData.GetAll());
+            // 3.1では不要?
+            //modelBuilder.Entity<SearchedBook>().ToTable("searched_book", t => t.ExcludeFromMigrations());
         }
         public DbSet<Author> Authors => Set<Author>();
         public DbSet<Book> Books => Set<Book>();
