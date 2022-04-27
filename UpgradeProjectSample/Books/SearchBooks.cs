@@ -58,7 +58,7 @@ namespace UpgradeProjectSample.Books
                 return new List<Book>();
             }
             return await this.context.Books
-                .Where(b => languages.Any(L => L.Id == b.LanguageId))
+                .Where(b => languageIds.Contains(b.LanguageId))
                 .ToListAsync();
         }
     }
