@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using UpgradeProjectSample.Apps;
 using UpgradeProjectSample.Users.Dto;
 using UpgradeProjectSample.Users.Models;

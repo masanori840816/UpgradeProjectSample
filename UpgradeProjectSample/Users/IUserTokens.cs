@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UpgradeProjectSample.Users.Models;
 
 namespace UpgradeProjectSample.Users

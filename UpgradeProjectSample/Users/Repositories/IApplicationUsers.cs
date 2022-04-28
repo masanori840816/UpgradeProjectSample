@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using UpgradeProjectSample.Models;
 using UpgradeProjectSample.Users.Models;
 
 namespace UpgradeProjectSample.Users.Repositories
