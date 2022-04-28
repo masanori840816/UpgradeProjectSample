@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using UpgradeProjectSample.Apps;
 using UpgradeProjectSample.Users.Dto;
 

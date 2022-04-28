@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 using UpgradeProjectSample.Models;
 using UpgradeProjectSample.Users.Models;
 
@@ -17,7 +15,7 @@ namespace UpgradeProjectSample.Users.Repositories
             this.logger = logger;
             this.context = context;
         }
-        public async Task<ApplicationUser> GetByEmailForSigninAsync(string email)
+        public async Task<ApplicationUser?> GetByEmailForSigninAsync(string email)
         {
             return await this.context.ApplicationUsers
                 .FirstOrDefaultAsync(u => u.Email == email);

@@ -112,6 +112,7 @@ try
     {
         endpoints.MapControllers();
     });
+    app.Run();
 }
 catch(Exception ex)
 {

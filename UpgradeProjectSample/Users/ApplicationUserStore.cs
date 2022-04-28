@@ -1,8 +1,5 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using UpgradeProjectSample.Models;
 using UpgradeProjectSample.Users.Models;
 
