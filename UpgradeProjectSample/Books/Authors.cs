@@ -1,9 +1,5 @@
 using UpgradeProjectSample.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace UpgradeProjectSample.Books
 {
@@ -36,7 +32,7 @@ namespace UpgradeProjectSample.Books
                 .Where(a => a.Name.Contains(name))
                 .ToListAsync();
         }
-        public async Task<Author> GetTrackedAuthorAsync(int id)
+        public async Task<Author?> GetTrackedAuthorAsync(int id)
         {
             return await this.context.Authors
                 .FirstOrDefaultAsync(a => a.Id == id);

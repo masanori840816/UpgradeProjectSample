@@ -1,11 +1,9 @@
-using System.Threading.Tasks;
 using UpgradeProjectSample.Models;
 
-namespace UpgradeProjectSample.Books
+namespace UpgradeProjectSample.Books;
+
+public interface IBooks
 {
-    public interface IBooks
-    {
-        Task CreateAsync(Author author, Book newItem);
-        Task<Book> GetTrackedBookAsync(int id);
-    }
+    Task CreateAsync(Author author, Book newItem);
+    Task<Book?> GetTrackedBookAsync(int id);
 }
