@@ -1,19 +1,6 @@
 namespace UpgradeProjectSample.Apps
 {
-    public class UserActionResult
-    {
-        public bool Succeeded { get; set; }
-        public string? ErrorMessage { get; set; }
-        public UserActionResult()
-        {
-            
-        }
-        public UserActionResult(bool succeeded, string? errorMessage)
-        {
-            this.Succeeded = succeeded;
-            this.ErrorMessage = errorMessage;
-        }
-    }
+    public record UserActionResult(bool Succeeded, string? ErrorMessage);
     public static class ActionResultFactory
     {
         public static UserActionResult GetSucceeded()

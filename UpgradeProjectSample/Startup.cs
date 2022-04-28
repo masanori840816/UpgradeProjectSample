@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -56,8 +57,8 @@ namespace UpgradeProjectSample
             services.AddControllers()
                 .AddJsonOptions(options =>
                 {
-                    // System.Text.Jsonだとver.3.XでReferenceLoopを切る方法がない？ためスキップ.
-                    //options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                    // ReferenceLoopを切る.
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
                 });
             services.AddIdentity<ApplicationUser, IdentityRole<int>>()
                 .AddUserStore<ApplicationUserStore>()

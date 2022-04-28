@@ -15,7 +15,7 @@ namespace UpgradeProjectSample.Models
         [Column("name")]
         public string Name { get; set; } = "";
 
-        public List<Book> Books { get; set; } = new List<Book>();
+        public List<Book> Books { get; init; } = new List<Book>();
 
         public static Author Create(string name)
         {
