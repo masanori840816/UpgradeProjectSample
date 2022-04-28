@@ -29,70 +29,65 @@ namespace UpgradeProjectSample.Books
         }
         public async Task CreateSampleAsync(string bookName)
         {
-            using(var transaction = await this.context.Database.BeginTransactionAsync())
+            using var transaction = await this.context.Database.BeginTransactionAsync();
+            try
             {
-                try
-                {
-                    var author = await this.authors.GetOrCreateAsync("sample author");
-                    await this.books.CreateAsync(author,
-                        new Book
-                        {
-                            Name = bookName,
-                            LanguageId = LanguageData.GetEnglish().Id,
-                        });
-                    transaction.Commit();
-                }
-                catch(NpgsqlException ex)
-                {
-                    logger.LogError(ex.Message);
-                    transaction.Rollback();
-                }
+                var author = await this.authors.GetOrCreateAsync("sample author");
+                await this.books.CreateAsync(author,
+                    new Book
+                    {
+                        Name = bookName,
+                        LanguageId = LanguageData.GetEnglish().Id,
+                    });
+                await transaction.CommitAsync();
+            }
+            catch(NpgsqlException ex)
+            {
+                logger.LogError(ex.Message);
+                await transaction.RollbackAsync();
             }
         }
         public async Task UpdateBookAsync(int id)
         {
-            using(var transaction = await this.context.Database.BeginTransactionAsync())
+            using var transaction = await this.context.Database.BeginTransactionAsync();
+            
+            try
             {
-                try
+                var target = await this.books.GetTrackedBookAsync(id);
+                if(target == null)
                 {
-                    var target = await this.books.GetTrackedBookAsync(id);
-                    if(target == null)
-                    {
-                        return;
-                    }
-                    target.LastUpdateDate = DateTime.Now.ToUniversalTime();
-                    await this.context.SaveChangesAsync();
-                    transaction.Commit();
+                    return;
+                }
+                target.LastUpdateDate = DateTime.Now.ToUniversalTime();
+                await this.context.SaveChangesAsync();
+                await transaction.CommitAsync();
 
-                }
-                catch(NpgsqlException ex)
-                {
-                    logger.LogError(ex.Message);
-                    transaction.Rollback();
-                }
+            }
+            catch(NpgsqlException ex)
+            {
+                logger.LogError(ex.Message);
+                await transaction.RollbackAsync();
             }
         }
         public async Task UpdateAuthorAsync(int id)
         {
-            using(var transaction = await this.context.Database.BeginTransactionAsync())
+            using var transaction = await this.context.Database.BeginTransactionAsync();
+            try
             {
-                try
+                var target = await this.authors.GetTrackedAuthorAsync(id);
+                if(target == null)
                 {
-                    var target = await this.authors.GetTrackedAuthorAsync(id);
-                    if(target == null)
-                    {
-                        return;
-                    }
-                    target.Id += 1;
-                    target.Name += $"_{id}";
-                    await this.context.SaveChangesAsync();
-                    transaction.Commit();
+                    return;
                 }
-                catch(NpgsqlException ex)
-                {
-                    logger.LogError(ex.Message);
-                    transaction.Rollback();
-                }
+                target.Id += 1;
+                target.Name += $"_{id}";
+                await this.context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch(NpgsqlException ex)
+            {
+                logger.LogError(ex.Message);
+                await transaction.RollbackAsync();
             }
         }
         public async Task<List<Book>> GetAllAsync()

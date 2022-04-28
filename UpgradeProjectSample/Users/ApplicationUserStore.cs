@@ -2,7 +2,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using UpgradeProjectSample.Models;
 using UpgradeProjectSample.Users.Models;
@@ -28,24 +27,23 @@ namespace UpgradeProjectSample.Users
             {
                 return IdentityResult.Failed(new IdentityError { Description = validationError });
             }
-            using(IDbContextTransaction transaction = context.Database.BeginTransaction())
+            using var transaction = await context.Database.BeginTransactionAsync();
+            
+            if(await context.ApplicationUsers
+                .AnyAsync(u => u.Email == user.Email,
+                cancellationToken))
             {
-                if(await context.ApplicationUsers
-                    .AnyAsync(u => u.Email == user.Email,
-                    cancellationToken))
+                return IdentityResult.Failed(new IdentityError
                 {
-                    return IdentityResult.Failed(new IdentityError
-                    {
-                        Description = "Your e-mail address is already used"
-                    });
-                }
-                var newUser = new ApplicationUser();
-                newUser.Update(user);
-                await context.ApplicationUsers.AddAsync(newUser, cancellationToken);
-                await context.SaveChangesAsync(cancellationToken);
-                transaction.Commit();
-                return IdentityResult.Success;
+                    Description = "Your e-mail address is already used"
+                });
             }
+            var newUser = new ApplicationUser();
+            newUser.Update(user);
+            await context.ApplicationUsers.AddAsync(newUser, cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync();
+            return IdentityResult.Success;
         }
         public async Task<IdentityResult> DeleteAsync(ApplicationUser user,
             CancellationToken cancellationToken)
@@ -115,34 +113,31 @@ namespace UpgradeProjectSample.Users
         public async Task SetPasswordHashAsync(ApplicationUser user, string passwordHash,
             CancellationToken cancellationToken)
         {
-            using(IDbContextTransaction transaction = context.Database.BeginTransaction())
-            {
-                ApplicationUser target = await context.ApplicationUsers
+            using var transaction = await context.Database.BeginTransactionAsync();
+            ApplicationUser target = await context.ApplicationUsers
                     .FirstOrDefaultAsync(u => u.Id == user.Id,
-                    cancellationToken);
-                if(target != null)
-                {
-                    target.PasswordHash = passwordHash;
-                    // validation
-                    await context.SaveChangesAsync();
-                    transaction.Commit();
-                }            
-            }            
+                cancellationToken);
+            if(target != null)
+            {
+                target.PasswordHash = passwordHash;
+                // validation
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }           
         }
         public async Task SetUserNameAsync(ApplicationUser user, string userName, CancellationToken cancellationToken)
         {
-            using(IDbContextTransaction transaction = context.Database.BeginTransaction())
-            {
-                ApplicationUser target = await context.ApplicationUsers
+            using var transaction = await context.Database.BeginTransactionAsync();
+            
+            ApplicationUser target = await context.ApplicationUsers
                     .FirstOrDefaultAsync(u => u.Id == user.Id,
-                    cancellationToken);
-                if(target != null)
-                {
-                    target.UserName = userName;
-                    // validation
-                    await context.SaveChangesAsync();
-                    transaction.Commit();
-                }            
+                cancellationToken);
+            if(target != null)
+            {
+                target.UserName = userName;
+                // validation
+                await context.SaveChangesAsync();
+                await transaction.CommitAsync();
             }
         }
         public async Task<IdentityResult> UpdateAsync(ApplicationUser user, CancellationToken cancellationToken)
@@ -152,21 +147,20 @@ namespace UpgradeProjectSample.Users
             {
                 return IdentityResult.Failed(new IdentityError { Description = validationError });
             }
-            using(IDbContextTransaction transaction = context.Database.BeginTransaction())
+            using var transaction = await context.Database.BeginTransactionAsync();
+
+            ApplicationUser target = await context.ApplicationUsers
+                .FirstOrDefaultAsync(u => u.Id == user.Id,
+                cancellationToken);
+            if(target == null)
             {
-                ApplicationUser target = await context.ApplicationUsers
-                    .FirstOrDefaultAsync(u => u.Id == user.Id,
-                    cancellationToken);
-                if(target == null)
-                {
-                    return IdentityResult.Failed(new IdentityError { Description = "Target user was not found" });
-                }
-                // validation
-                target.Update(user);
-                await context.SaveChangesAsync(cancellationToken);
-                transaction.Commit();
-                return IdentityResult.Success;
+                return IdentityResult.Failed(new IdentityError { Description = "Target user was not found" });
             }
+            // validation
+            target.Update(user);
+            await context.SaveChangesAsync(cancellationToken);
+            transaction.Commit();
+            return IdentityResult.Success;
         }
     }
 }
