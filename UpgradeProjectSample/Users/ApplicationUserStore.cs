@@ -48,7 +48,7 @@ namespace UpgradeProjectSample.Users
         public async Task<IdentityResult> DeleteAsync(ApplicationUser user,
             CancellationToken cancellationToken)
         {
-            ApplicationUser target = await context.ApplicationUsers
+            var target = await context.ApplicationUsers
                 .FirstOrDefaultAsync(u => u.Id == user.Id,
                 cancellationToken);
             if(target != null)
@@ -114,7 +114,7 @@ namespace UpgradeProjectSample.Users
             CancellationToken cancellationToken)
         {
             using var transaction = await context.Database.BeginTransactionAsync();
-            ApplicationUser target = await context.ApplicationUsers
+            var target = await context.ApplicationUsers
                     .FirstOrDefaultAsync(u => u.Id == user.Id,
                 cancellationToken);
             if(target != null)
@@ -129,7 +129,7 @@ namespace UpgradeProjectSample.Users
         {
             using var transaction = await context.Database.BeginTransactionAsync();
             
-            ApplicationUser target = await context.ApplicationUsers
+            var target = await context.ApplicationUsers
                     .FirstOrDefaultAsync(u => u.Id == user.Id,
                 cancellationToken);
             if(target != null)
@@ -149,7 +149,7 @@ namespace UpgradeProjectSample.Users
             }
             using var transaction = await context.Database.BeginTransactionAsync();
 
-            ApplicationUser target = await context.ApplicationUsers
+            var target = await context.ApplicationUsers
                 .FirstOrDefaultAsync(u => u.Id == user.Id,
                 cancellationToken);
             if(target == null)
