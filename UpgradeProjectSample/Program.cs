@@ -114,10 +114,14 @@ try
     });
     app.Run();
 }
-catch(Exception ex)
+catch (Exception ex)
 {
+    string type = ex.GetType().Name;
+    if (type.Equals("StopTheHostException", StringComparison.Ordinal))
+    {
+        throw;
+    }
     logger.Error(ex, "Stopped program because of exception");
-    throw;
 }
 finally
 {
