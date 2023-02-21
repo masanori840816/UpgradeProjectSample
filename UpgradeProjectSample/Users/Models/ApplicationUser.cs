@@ -12,33 +12,33 @@ public class ApplicationUser: IdentityUser<int>
     public override int Id { get; set; }
     [Required]
     [Column("user_name")]
-    public override string UserName { get; set; } = null!;
+    public override string? UserName { get; set; } = null!;
     [Column("organization")]
     public string? Organization { get; set; }
     [Required]
     [Column("mail")]
-    public override string Email { get; set; } = null!;
+    public override string? Email { get; set; } = null!;
     [Required]
     [Column("password")]
-    public override string PasswordHash { get; set; } = null!;
+    public override string? PasswordHash { get; set; } = null!;
     [Required]
     [Column("last_update_date", TypeName = "timestamp with time zone")]
     public DateTime LastUpdateDate { get; set; }
     [NotMapped]
     public override bool EmailConfirmed { get; set; }
     [NotMapped]
-    public override string NormalizedUserName {
+    public override string? NormalizedUserName {
         get
         {
-            return UserName.ToUpper();
+            return UserName?.ToUpper();
         }
         set { /* DO nothing*/ }
     }
     [NotMapped]
-    public override string NormalizedEmail {
+    public override string? NormalizedEmail {
         get
         {
-            return Email.ToUpper();
+            return Email?.ToUpper();
         }
         set { /* DO nothing*/ }
     }

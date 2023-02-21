@@ -28,11 +28,11 @@ namespace UpgradeProjectSample.Users
                     this.config["Jwt:Audience"],
                     claims: new []
                     {
-                        new Claim(ClaimTypes.Email, user.Email)
+                        new Claim(ClaimTypes.Email, user?.Email ?? "")
                     },
                     expires: DateTime.Now.AddSeconds(30),
                     signingCredentials: new SigningCredentials(
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.config["Jwt:Key"])),
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(this.config["Jwt:Key"] ?? "")),
                         SecurityAlgorithms.HmacSha256)));
         }
     }

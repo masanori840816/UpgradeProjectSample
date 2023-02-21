@@ -56,7 +56,7 @@ namespace UpgradeProjectSample.Users
             return IdentityResult.Success;
         }
         public void Dispose() { /* do nothing */ }
-        public async Task<ApplicationUser> FindByIdAsync(string userId,
+        public async Task<ApplicationUser?> FindByIdAsync(string userId,
             CancellationToken cancellationToken)
         {
             if(int.TryParse(userId, out var id) == false)
@@ -68,20 +68,22 @@ namespace UpgradeProjectSample.Users
                 cancellationToken);
             return result ?? new ApplicationUser();
         }
-        public async Task<ApplicationUser> FindByNameAsync(string normalizedUserName,
+        public async Task<ApplicationUser?> FindByNameAsync(string normalizedUserName,
             CancellationToken cancellationToken)
         {
             var result = await context.ApplicationUsers
-                .FirstOrDefaultAsync(u => u.UserName.ToUpper() == normalizedUserName,
+                .FirstOrDefaultAsync(u => u != null &&
+                    string.IsNullOrEmpty(u.UserName) == false &&
+                    u.UserName.ToUpper() == normalizedUserName,
                 cancellationToken);
             return result ?? new ApplicationUser();
         }
-        public async Task<string> GetNormalizedUserNameAsync(ApplicationUser user,
+        public async Task<string?> GetNormalizedUserNameAsync(ApplicationUser user,
             CancellationToken cancellationToken)
         {
             return await Task.FromResult(user.NormalizedUserName);
         }
-        public async Task<string> GetPasswordHashAsync(ApplicationUser user,
+        public async Task<string?> GetPasswordHashAsync(ApplicationUser user,
             CancellationToken cancellationToken)
         {
             return await Task.FromResult(user.PasswordHash);
@@ -91,7 +93,7 @@ namespace UpgradeProjectSample.Users
         {
             return await Task.FromResult(user.Id.ToString());
         }
-        public async Task<string> GetUserNameAsync(ApplicationUser user,
+        public async Task<string?> GetUserNameAsync(ApplicationUser user,
             CancellationToken cancellationToken)
         {
             return await Task.FromResult(user.UserName);
@@ -102,12 +104,12 @@ namespace UpgradeProjectSample.Users
             return await Task.FromResult(true);
         }
         public async Task SetNormalizedUserNameAsync(ApplicationUser user,
-            string normalizedName, CancellationToken cancellationToken)
+            string? normalizedName, CancellationToken cancellationToken)
         {
             // do nothing
             await Task.Run(() => {});
         }
-        public async Task SetPasswordHashAsync(ApplicationUser user, string passwordHash,
+        public async Task SetPasswordHashAsync(ApplicationUser user, string? passwordHash,
             CancellationToken cancellationToken)
         {
             using var transaction = await context.Database.BeginTransactionAsync();
@@ -122,7 +124,7 @@ namespace UpgradeProjectSample.Users
                 await transaction.CommitAsync();
             }           
         }
-        public async Task SetUserNameAsync(ApplicationUser user, string userName, CancellationToken cancellationToken)
+        public async Task SetUserNameAsync(ApplicationUser user, string? userName, CancellationToken cancellationToken)
         {
             using var transaction = await context.Database.BeginTransactionAsync();
             
