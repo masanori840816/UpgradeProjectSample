@@ -4,7 +4,7 @@ ASP.NET Core(+ Entity Framework Core)のプロジェクトを、.NET Core ver.2.
 
 [【オンライン】.NET 5 終了目前！ C# Tokyo イベント](https://csharp-tokyo.connpass.com/event/243622/) で使用したものを継続して更新しています。
 
-Current SDK Version: .NET 7.0.3
+Current SDK Version: .NET 7.0.200
 
 ## Frameworks & Libraries
 * ASP.NET Core
