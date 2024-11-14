@@ -4,18 +4,16 @@ ASP.NET Core(+ Entity Framework Core)のプロジェクトを、.NET Core ver.2.
 
 [【オンライン】.NET 5 終了目前！ C# Tokyo イベント](https://csharp-tokyo.connpass.com/event/243622/) で使用したものを継続して更新しています。
 
-Current SDK Version: .NET 7.0.200
+Current SDK Version: .NET 8.0.404
 
 ## Frameworks & Libraries
 * ASP.NET Core
 * Entity Framework Core
 * NLog
 
-## DbConnection
-接続文字列を appsettings.Development.json に下記の形式で設定しています。
+### Environment variables
+接続文字列をシステム環境変数に設定しています。
 
-```json
-{
-    "DbConnection": "Host=localhost;Port=5432;Database={DB Name};Username={User Name};Password={Password};"
-}
-```
+|Name|Value|
+|--|--|
+|ConnectionStrings__BookShelf|Host=localhost;Port=5432;Database=book_shelf;Username={User Name};Password={Password};|

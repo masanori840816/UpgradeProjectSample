@@ -25,7 +25,7 @@ try
     .UseNLog();
     builder.Services.AddRazorPages();
     builder.Services.AddDbContext<SampleContext>(options =>
-        options.UseNpgsql(builder.Configuration["DbConnection"]));
+        options.UseNpgsql(builder.Configuration.GetConnectionString("BookShelf")));
             
     // JWTを使った認証.
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
