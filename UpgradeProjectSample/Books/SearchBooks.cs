@@ -14,7 +14,10 @@ namespace UpgradeProjectSample.Books
         {
             // this.context.SearchedBooks.FromSql から変更.
             var query = context.SearchedBooks
-                .FromSqlRaw("SELECT b.id AS \"BookId\", b.language_id AS \"LanguageId\", b.name AS \"BookName\", a.name AS \"AuthorName\" FROM book b INNER JOIN author AS a ON b.author_id = a.id");
+                .FromSqlRaw("""
+                    SELECT b.id AS \"BookId\", b.language_id AS \"LanguageId\", b.name AS \"BookName\",
+                     a.name AS \"AuthorName\" FROM book b INNER JOIN author AS a ON b.author_id = a.id
+                """);
 
             if(string.IsNullOrEmpty(criteria.Name) == false)
             {
