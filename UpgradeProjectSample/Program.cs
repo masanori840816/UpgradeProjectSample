@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NLog;
 using NLog.Web;
 using UpgradeProjectSample.Books;
 using UpgradeProjectSample.Models;
@@ -12,17 +13,16 @@ using UpgradeProjectSample.Users;
 using UpgradeProjectSample.Users.Models;
 using UpgradeProjectSample.Users.Repositories;
 
-var logger = NLogBuilder.ConfigureNLog("Nlog.config").GetCurrentClassLogger();
+var logger = LogManager.Setup().LoadConfigurationFromFile("Nlog.config").GetCurrentClassLogger();
 
 try
 {
     var builder = WebApplication.CreateBuilder(args);
-    builder.Host.ConfigureLogging(logging =>
-    {
-        logging.ClearProviders();
-        logging.SetMinimumLevel(LogLevel.Trace);
-    })
-    .UseNLog();
+    builder.Logging.ClearProviders();
+    builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+    builder.Host.UseNLog();
+    
+    builder.Services.AddAntiforgery();
     builder.Services.AddRazorPages();
     builder.Services.AddDbContext<SampleContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("BookShelf")));
