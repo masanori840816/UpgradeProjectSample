@@ -5,13 +5,8 @@ using UpgradeProjectSample.Users.Models;
 
 namespace UpgradeProjectSample.Models
 {
-    public class SampleContext: DbContext
+    public class SampleContext(DbContextOptions<SampleContext> options) : DbContext(options)
     {
-        public SampleContext(DbContextOptions<SampleContext> options)
-            : base(options)
-        {
-
-        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Book>()
