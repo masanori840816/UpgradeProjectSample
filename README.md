@@ -17,3 +17,4 @@ Current SDK Version: .NET 8.0.404
 |Name|Value|
 |--|--|
 |ConnectionStrings__BookShelf|Host=localhost;Port=5432;Database=book_shelf;Username={User Name};Password={Password};|
+|Jwt__Key|your_jwt_key|
