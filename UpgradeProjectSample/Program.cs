@@ -65,7 +65,7 @@ try
     builder.Services.AddScoped<IApplicationUsers, ApplicationUsers>();
     builder.Services.AddScoped<ILanguages, Languages>();
     builder.Services.AddScoped<IAuthors, Authors>();
-    builder.Services.AddScoped<IBooks, UpgradeProjectSample.Books.Books>();
+    builder.Services.AddScoped<IBooks, Books>();
     builder.Services.AddScoped<ISearchBooks, SearchBooks>();
     builder.Services.AddScoped<IBookService, BookService>();
     
