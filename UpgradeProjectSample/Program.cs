@@ -110,16 +110,11 @@ try
     app.MapControllers();
     app.Run();
 }
-catch (Exception ex)
+catch (Exception ex) when (ex is not HostAbortedException)
 {
-    string type = ex.GetType().Name;
-    if (type.Equals("StopTheHostException", StringComparison.Ordinal))
-    {
-        throw;
-    }
-    logger.Error(ex, "Stopped program because of exception");
+    logger.Fatal(ex, "Host terminated unexpectedly.");
 }
 finally
 {
-    NLog.LogManager.Shutdown();
+    LogManager.Shutdown();
 }
